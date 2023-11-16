@@ -1,0 +1,109 @@
+html,
+body {
+  height: 100%;
+}
+
+.container-center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.toolbar {
+  background: #0f93c9;
+}
+
+.centrado-texto {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.field-capital {
+  max-width: 250px;
+}
+
+form {
+  margin: 0 auto;
+}
+
+.content {
+  margin: 0 auto;
+  max-width: 1024px;
+  margin-bottom: 100px;
+}
+
+.container-button {
+  display: flex;
+  justify-content: center;
+}
+
+.tabla-cuotas {
+  width: 100%;
+  margin-top: 30px;
+  min-width: 650px;
+}
+
+.mat-column-demo-position {
+  width: 32px;
+  border-right: 1px solid currentColor;
+  padding-right: 24px;
+  text-align: center;
+}
+
+.mat-column-demo-name {
+  padding-left: 16px;
+  font-size: 20px;
+}
+
+.mat-column-demo-weight {
+  font-style: italic;
+}
+
+.mat-column-demo-symbol {
+  width: 32px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+td {
+  padding-right: 8px;
+}
+
+tr.mat-footer-row {
+  font-weight: bold;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.logo-github {
+  width: 30px;
+  height: 30px;
+}
+
+@media screen and (max-width: 700px) {
+  .responsive {
+    overflow-x: auto;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  .titulo-toolbar {
+    font-size: 17px;
+  }
+}
