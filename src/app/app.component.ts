@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SeparadorMilesPipe } from "./pipes/separador-miles.pipe";
+import { ThousandSeparator } from "./pipes/thousands-separator.pipe";
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -27,7 +27,7 @@ export interface installment {
   imports: [
     CommonModule,
     RouterOutlet,
-    SeparadorMilesPipe,
+    ThousandSeparator,
     MatToolbarModule,
     MatFormFieldModule,
     MatGridListModule,
