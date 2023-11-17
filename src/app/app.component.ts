@@ -7,171 +7,186 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import {MatTableModule} from '@angular/material/table';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 
-export interface cuota {
-  numeroCuota?: number;
-  amortizacion?: number;
-  interes?: number;
-  cuota?: number;
-  saldo: number;
+export interface installment {
+  numberInstallment?: number;
+  amortization?: number;
+  interest?: number;
+  installment?: number;
+  pendingAmount: number;
 }
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SeparadorMilesPipe, MatToolbarModule, MatFormFieldModule, MatGridListModule, FormsModule, MatTableModule, FormsModule, ReactiveFormsModule, MatInputModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    SeparadorMilesPipe,
+    MatToolbarModule,
+    MatFormFieldModule,
+    MatGridListModule,
+    FormsModule,
+    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'calculate-loan-installments-french-system';
+  dataSource: installment[] = [];
 
-  dataSource: cuota[] = [];
+  loanAmount: string = '';
+  term: number = 0;
 
-  capital: string = '';
-  plazo: number = 0;
+  interestRate: number = 0;
+  interestMonthly: number = 0;
+  installmenttMonthly: number = 0;
+  installments: installment[] = [];
+  totalAmortization: number = 0;
+  totalInterest: number = 0;
+  totalInstallments: number = 0;
+  pendingAmount: number = 0;
 
-  tazaInteres: number = 0;
-  interesMensual: number = 0;
-  cuotaMensual: number = 0;
-  cuotas: cuota[] = [];
-  totalAmortizacion: number = 0;
-  totalInteres: number = 0;
-  totalCuotas: number = 0;
-  saldo: number = 0;
-
-  columnasTabla: string[] = [
-    'numero-cuota',
-    'amortizacion',
-    'interes',
-    'saldo',
-    'cuota',
+  tableColumns: string[] = [
+    'numberInstallment',
+    'amortization',
+    'interest',
+    'pendingAmount',
+    'installment',
   ];
 
+  form: FormGroup;
 
-  form = new FormGroup({
-    amount: new FormControl('', Validators.required),
-    installments: new FormControl('', Validators.required),
-    interestRate: new FormControl('', Validators.required),
-  });
-
-  constructor(private _snackBar: MatSnackBar) { }
-
-
-  procesar() {
-    if (this.validaciones()) {
-      return;
-    } else {
-      this.calcular();
-    }
+  constructor(private _snackBar: MatSnackBar, private fb: FormBuilder) {
+    this.form = this.fb.group({
+      amount: ['', [Validators.required, Validators.min(1)]],
+      installments: ['', [Validators.required, Validators.min(1)]],
+      interestRate: ['', [Validators.required, Validators.min(0.01)]],
+    });
   }
 
-  calcular() {
-    this.cerearVariables();
+  calculate() {
+    this.resetVariables();
 
-    this.tazaInteres = this.verificarDecimal(this.tazaInteres);
+    this.interestRate = this.checkDecimal(
+      this.form.get('interestRate')?.value
+    );
+    this.loanAmount = this.form.get('amount')?.value;
+    this.term = this.form.get('installments')?.value;
 
-    this.interesMensual = this.tazaInteres / 12;
+    this.interestMonthly = this.interestRate / 12;
 
-    this.cuotaMensual =
-      ((this.interesMensual / 100) * this.parsearAEntero(this.capital)) /
-      (1 - Math.pow(1 / (1 + this.interesMensual / 100), this.plazo));
+    this.installmenttMonthly =
+      ((this.interestMonthly / 100) * this.parseToInt(this.loanAmount)) /
+      (1 - Math.pow(1 / (1 + this.interestMonthly / 100), this.term));
 
-    this.cuotaMensual = Math.round(this.cuotaMensual); // Redondeo
+    this.installmenttMonthly = Math.round(this.installmenttMonthly); // Redondeo
 
-    this.saldo = this.parsearAEntero(this.capital);
-    for (let cuotaIndex = 1; cuotaIndex <= this.plazo; cuotaIndex++) {
-      let cuota: cuota = {
-        numeroCuota: cuotaIndex,
-        saldo: this.saldo,
+    this.pendingAmount = this.parseToInt(this.loanAmount);
+    for (let cuotaIndex = 1; cuotaIndex <= this.term; cuotaIndex++) {
+      let cuota: installment = {
+        numberInstallment: cuotaIndex,
+        pendingAmount: this.pendingAmount,
       };
 
       // Interes de la cuota
-      cuota.interes = Math.round((cuota.saldo / 100) * this.interesMensual);
+      cuota.interest = Math.round((cuota.pendingAmount / 100) * this.interestMonthly);
 
       // Amortizacion de la cuota
-      cuota.amortizacion = this.cuotaMensual - cuota.interes;
+      cuota.amortization = this.installmenttMonthly - cuota.interest;
 
-      cuota.cuota = this.cuotaMensual;
+      cuota.installment = this.installmenttMonthly;
 
-      if (cuotaIndex == this.plazo) {
-        cuota.amortizacion = this.saldo;
-        cuota.cuota = cuota.amortizacion + cuota.interes;
+      if (cuotaIndex == this.term) {
+        cuota.amortization = this.pendingAmount;
+        cuota.installment = cuota.amortization + cuota.interest;
       }
 
       // Saldo de la cuota
-      this.saldo = this.saldo - cuota.amortizacion;
+      this.pendingAmount = this.pendingAmount - cuota.amortization;
 
-      this.totalAmortizacion = this.totalAmortizacion + cuota.amortizacion;
-      this.totalInteres = this.totalInteres + cuota.interes;
-      this.totalCuotas = this.totalAmortizacion + this.totalInteres;
+      this.totalAmortization = this.totalAmortization + cuota.amortization;
+      this.totalInterest = this.totalInterest + cuota.interest;
+      this.totalInstallments = this.totalAmortization + this.totalInterest;
 
-      this.cuotas.push(cuota);
+      this.installments.push(cuota);
 
-      cuota.saldo = cuota.saldo - cuota.amortizacion;
+      cuota.pendingAmount = cuota.pendingAmount - cuota.amortization;
     }
 
-    this.dataSource = this.cuotas;
+    this.dataSource = this.installments;
   }
 
-  cerearVariables() {
-    this.cuotaMensual = 0;
-    this.saldo = 0;
-    this.cuotas = [];
+  resetVariables() {
+    this.installmenttMonthly = 0;
+    this.pendingAmount = 0;
+    this.installments = [];
 
-    this.totalAmortizacion = 0;
-    this.totalInteres = 0;
-    this.totalCuotas = 0;
+    this.totalAmortization = 0;
+    this.totalInterest = 0;
+    this.totalInstallments = 0;
   }
 
-  verificarDecimal(num: any) {
+  checkDecimal(num: any) {
     return parseFloat(num.toString().replaceAll(',', '.'));
   }
 
-  parseSeparadorMiles(valor: any) {
-    // if (Number(valor).toString() == 'NaN') {
-    //   console.log('El valor ingresado no es un número.');
-    //   this.capital = '';
-    // }
+  // parseSeparadorMiles(valor: any) {
+  //   valor = valor.toString().replaceAll('.', '');
+  //   const amountControl = this.form.get('amount');
+  //   if (amountControl)
+  //     amountControl.setValue(Number(valor).toLocaleString('es-AR'));
+  // }
 
-    valor = valor.toString().replaceAll('.', '');
-    this.capital = Number(valor).toLocaleString('es-AR');
-  }
-
-  parsearAEntero(numString: any) {
+  parseToInt(numString: any) {
     return parseInt(numString.replaceAll('.', ''));
   }
 
-  validaciones() {
-    const capital = this.parsearAEntero(this.capital);
-    var regExp = /[a-zA-Z]/g;
-    var testString = capital.toString();
-
-    if (regExp.test(testString)) {
-      this.openSnackBar('Monto no válido !');
-      return true;
-    }
-
-    if (this.plazo == 0) {
-      this.openSnackBar('Plazo no válido !');
-      return true;
-    }
-
-    if (this.tazaInteres <= 0) {
-      this.openSnackBar('Tasa no válida !');
-      return true;
-    }
-
-    return false;
-  }
 
   openSnackBar(mensaje: string) {
     this._snackBar.open(mensaje, '', {
       duration: 2000,
     });
+  }
+
+  getErrorMessage(controlName: string) {
+    const control = this.form.get(controlName);
+
+    if (control?.hasError('required') && (control.dirty || control.touched)) {
+      return 'Este campo es requerido';
+    }
+
+    if (control?.hasError('min') && (control.dirty || control.touched)) {
+      return 'El valor debe ser mayor que 0';
+    }
+
+    return '';
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    // Allow only values type number
+    if (
+      (event.key < '0' || event.key > '9') &&
+      ![
+        'Backspace',
+        'Tab',
+        'ArrowLeft',
+        'ArrowRight',
+        'Delete',
+        'Enter',
+      ].includes(event.key)
+    ) {
+      event.preventDefault();
+    }
   }
 }

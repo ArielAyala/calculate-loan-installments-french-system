@@ -1,104 +1,116 @@
-<style></style>
-<mat-toolbar class="toolbar">
-  <div class="container-center">
-    <span class="titulo-toolbar">Calculadora de cuotas - Sistema francés</span>
-  </div>
-</mat-toolbar>
-<div class="content" role="main">
-  <h3 class="centrado-texto">Ingrese el monto, plazo (cuotas) y la tasa</h3>
-
-  <form class="example-form" [formGroup]="form">
-    <div class="container-center">
-      <mat-form-field
-        class="example-full-width field-capital"
-        appearance="fill"
-      >
-        <mat-label>Monto</mat-label>
-        <input
-          name="capital"
-          matInput
-          formControlName="amount"
-          (ngModelChange)="parseSeparadorMiles($event)"
-        />
-      </mat-form-field>
+<p>
+  <mat-toolbar>
+    <div style="width: 100%">
+      <h1 class="titulo-toolbar centrado-texto" style="margin: 0 auto;">
+        Calculate loan installments - French system
+      </h1>
     </div>
-    <mat-grid-list cols="5" rowHeight="1:1">
-      <mat-grid-tile></mat-grid-tile>
-      <mat-grid-tile>
-        <mat-form-field class="example-full-width" appearance="fill">
-          <mat-label>Cuotas</mat-label>
-          <input name="plazo" matInput maxlength="5" formControlName="installments" />
-        </mat-form-field>
-      </mat-grid-tile>
-      <mat-grid-tile></mat-grid-tile>
-      <mat-grid-tile>
-        <mat-form-field class="example-full-width" appearance="fill">
-          <mat-label>Tasa</mat-label>
-          <input name="tasa" matInput maxlength="5" formControlName="interestRate" />
-        </mat-form-field>
-      </mat-grid-tile>
-    </mat-grid-list>
+  </mat-toolbar>
+</p>
+<div class="content" role="main">
+  <br>
+  <form class="example-form" [formGroup]="form" (ngSubmit)="calculate()">
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Amount</mat-label>
+      <input
+        name="capital"
+        matInput
+        formControlName="amount"
+        type="text"
+        pattern="[0-9]*"
+        (keydown)="onKeyDown($event)"
+      />
+      <mat-error>{{ getErrorMessage("amount") }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Number of installments</mat-label>
+      <input
+        type="number"
+        name="plazo"
+        min="1"
+        matInput
+        maxlength="5"
+        formControlName="installments"
+      />
+      <mat-error>{{ getErrorMessage("installments") }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Interest rate</mat-label>
+      <input
+        type="number"
+        step="0.01"
+        name="tasa"
+        min="0.1"
+        matInput
+        maxlength="5"
+        formControlName="interestRate"
+      />
+      <mat-error>{{ getErrorMessage("interestRate") }}</mat-error>
+    </mat-form-field>
 
     <div class="container-button">
-      <button mat-raised-button (click)="procesar()">Generar</button>
+      <button mat-raised-button type="submit" [disabled]="form.invalid">
+        Generate
+      </button>
     </div>
   </form>
-
 
   <div class="responsive">
     <table
       mat-table
       [dataSource]="dataSource"
       class="mat-elevation-z8 tabla-cuotas"
-      *ngIf="this.cuotas.length"
+      *ngIf="this.installments.length"
     >
-      <ng-container matColumnDef="numero-cuota">
-        <th mat-header-cell *matHeaderCellDef><b>Nro. Cuota</b></th>
-        <td mat-cell *matCellDef="let element">{{ element.numeroCuota }}</td>
+      <ng-container matColumnDef="numberInstallment">
+        <th mat-header-cell *matHeaderCellDef><b>#</b></th>
+        <td mat-cell *matCellDef="let element">{{ element.numberInstallment }}</td>
         <td mat-footer-cell *matFooterCellDef>Total</td>
       </ng-container>
 
-      <ng-container matColumnDef="amortizacion">
-        <th mat-header-cell *matHeaderCellDef><b>Amortizacion</b></th>
+      <ng-container matColumnDef="amortization">
+        <th mat-header-cell *matHeaderCellDef><b>Amortization</b></th>
         <td mat-cell *matCellDef="let element">
-          {{ element.amortizacion | separadorMiles }}
+          {{ element.amortization | separadorMiles }}
         </td>
         <td mat-footer-cell *matFooterCellDef>
-          {{ totalAmortizacion | separadorMiles }}
+          {{ totalAmortization | separadorMiles }}
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="interes">
-        <th mat-header-cell *matHeaderCellDef><b>Interés</b></th>
+      <ng-container matColumnDef="interest">
+        <th mat-header-cell *matHeaderCellDef><b>Interest</b></th>
         <td mat-cell *matCellDef="let element">
-          {{ element.interes | separadorMiles }}
+          {{ element.interest | separadorMiles }}
         </td>
         <td mat-footer-cell *matFooterCellDef>
-          {{ totalInteres | separadorMiles }}
+          {{ totalInterest | separadorMiles }}
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="saldo">
-        <th mat-header-cell *matHeaderCellDef><b>Saldo</b></th>
+      <ng-container matColumnDef="pendingAmount">
+        <th mat-header-cell *matHeaderCellDef><b>Pending amount</b></th>
         <td mat-cell *matCellDef="let element">
-          {{ element.saldo | separadorMiles }}
+          {{ element.pendingAmount | separadorMiles }}
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
 
-      <ng-container matColumnDef="cuota">
-        <th mat-header-cell *matHeaderCellDef><b>Cuota</b></th>
+      <ng-container matColumnDef="installment">
+        <th mat-header-cell *matHeaderCellDef><b>Installment</b></th>
         <td mat-cell *matCellDef="let element">
-          {{ element.cuota | separadorMiles }}
+          {{ element.installment | separadorMiles }}
         </td>
         <td mat-footer-cell *matFooterCellDef>
-          {{ totalCuotas | separadorMiles }}
+          {{ totalInstallments | separadorMiles }}
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnasTabla"></tr>
-      <tr mat-footer-row *matFooterRowDef="columnasTabla"></tr>
+      <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="tableColumns"></tr>
     </table>
   </div>
 
@@ -108,20 +120,19 @@
 </div>
 
 <div class="footer">
-  <mat-toolbar>
-    <div class="container-center">
-      <a
-        href="https://github.com/ArielAyala/calculador-cuotas-sistema-frances"
-        target="_blank"
-      >
-        <img
-          src="assets/logo-github.svg"
-          alt="logo github"
-          class="logo-github"
-        />
-      </a>
-    </div>
-  </mat-toolbar>
+  <div class="container-end">
+    <a
+      href="https://github.com/ArielAyala/calculador-cuotas-sistema-frances"
+      target="_blank"
+    >
+      <img src="assets/logo-github.svg" alt="logo github" class="logo-github" />
+    </a>
+  </div>
 </div>
 
+<!-- <div class="footer">
+  <a href="https://github.com/TU_USUARIO/TU_REPOSITORIO" target="_blank">
+    <img src="assets/logo-github.svg" alt="GitHub Logo" />
+  </a>
+</div> -->
 <router-outlet></router-outlet>

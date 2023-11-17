@@ -9,6 +9,12 @@ body {
   justify-content: center;
 }
 
+.container-end {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
 .toolbar {
   background: #0f93c9;
 }
@@ -83,6 +89,10 @@ tr.mat-footer-row {
   font-weight: bold;
 }
 
+tr.mat-mdc-footer-row td {
+  font-weight: bold;
+}
+
 .footer {
   position: fixed;
   left: 0;
@@ -94,6 +104,7 @@ tr.mat-footer-row {
 .logo-github {
   width: 30px;
   height: 30px;
+  margin: 10px;
 }
 
 @media screen and (max-width: 700px) {
