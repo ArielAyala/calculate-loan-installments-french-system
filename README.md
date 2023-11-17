@@ -1,27 +1,36 @@
-# CalculateLoanInstallmentsFrenchSystem
+# Calculate Loan Installments - French System
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.1.
+[![Angular](https://img.shields.io/badge/Angular-17.0.0-red)](https://angular.io/)
+[![Angular CLI](https://img.shields.io/badge/Angular%20CLI-17.0.1-blue)](https://cli.angular.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue)](https://www.typescriptlang.org/)
 
-## Development server
+**A Simple and User-Friendly Loan Installment Calculator - French System**
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+This application provides an easy-to-use solution for calculating loan installments using the French amortization system. Users can effortlessly input the loan amount, select the number of installments, and set the interest rate to obtain a comprehensive breakdown of each installment. The clear and intuitive interface ensures a straightforward experience, helping users plan and understand their loan repayment schedule effectively.
 
-## Code scaffolding
+## Installation
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Clone the repository: `git clone https://github.com/ArielAyala/calculate-loan-installments-french-system.git`
+2. Navigate to the project folder: `cd calculate-loan-installments-french-system`
+3. Install dependencies: `npm install`
 
-## Build
+## Usage
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Run the application: `ng serve`
+- Open your browser and visit `http://localhost:4200`
 
-## Running unit tests
+## Dependencies
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- **Angular**: ^17.0.0
+- **Angular CLI**: ^17.0.1
+- **TypeScript**: ~5.2.2
 
-## Running end-to-end tests
+## Development Dependencies
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- **@angular-devkit/build-angular**: ^17.0.1
+- **@types/jasmine**: ~5.1.0
+- **jasmine-core**: ~5.1.0
+- **karma**: ~6.4.0
+- **typescript**: ~5.2.2
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Feel free to explore and enhance the application as needed. Happy coding!
