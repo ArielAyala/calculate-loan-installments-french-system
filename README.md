@@ -8,6 +8,10 @@
 
 This application provides an easy-to-use solution for calculating loan installments using the French amortization system. Users can effortlessly input the loan amount, select the number of installments, and set the interest rate to obtain a comprehensive breakdown of each installment. The clear and intuitive interface ensures a straightforward experience, helping users plan and understand their loan repayment schedule effectively.
 
+## Deployment
+
+The application is deployed on GitHub Pages. You can access it [here](https://arielayala.github.io/calculate-loan-installments-french-system/).
+
 ## Installation
 
 1. Clone the repository: `git clone https://github.com/ArielAyala/calculate-loan-installments-french-system.git`
