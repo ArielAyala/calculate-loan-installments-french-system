@@ -114,6 +114,12 @@
     </table>
   </div>
 
+  <div class="container-button" *ngIf="installments.length">
+    <button mat-raised-button (click)="downloadXls()">
+      Download XLS
+    </button>
+  </div>
+
   <br />
   <br />
   <br />
