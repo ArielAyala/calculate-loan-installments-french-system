@@ -159,6 +159,42 @@ export class AppComponent {
     });
   }
 
+  downloadXls() {
+    const headers = [
+      '#',
+      'Amortization',
+      'Interest',
+      'Pending amount',
+      'Installment',
+    ];
+
+    let table = '<table><tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+    this.installments.forEach((i) => {
+      table +=
+        '<tr>' +
+        [
+          i.numberInstallment,
+          i.amortization,
+          i.interest,
+          i.pendingAmount,
+          i.installment,
+        ]
+          .map((v) => `<td>${v}</td>`)
+          .join('') +
+        '</tr>';
+    });
+
+    table += '</table>';
+
+    const blob = new Blob([table], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'installments.xls';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
   getErrorMessage(controlName: string) {
     const control = this.form.get(controlName);
 
