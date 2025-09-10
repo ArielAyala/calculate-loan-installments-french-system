@@ -152,6 +152,9 @@ export class AppComponent {
     return parseInt(numString.replaceAll('.', ''));
   }
 
+  private formatWithThousandsSeparator(value: any): string {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
 
   openSnackBar(mensaje: string) {
     this._snackBar.open(mensaje, '', {
@@ -184,6 +187,20 @@ export class AppComponent {
           .join('') +
         '</tr>';
     });
+
+    // Add totals row
+    table +=
+      '<tr>' +
+      [
+        'Total',
+        this.formatWithThousandsSeparator(this.totalAmortization),
+        this.formatWithThousandsSeparator(this.totalInterest),
+        '-',
+        this.formatWithThousandsSeparator(this.totalInstallments),
+      ]
+        .map((v) => `<td><b>${v}</b></td>`)
+        .join('') +
+      '</tr>';
 
     table += '</table>';
 
